@@ -1,5 +1,5 @@
-export function generateWhatsAppLink(cartItems, total, phoneNumber) {
-  let message = "Olá! Gostaria de fazer o seguinte pedido:\n\n";
+export function generateWhatsAppLink(cartItems, total, phoneNumber, customerName, customerMessage) {
+  let message = `Olá! Meu nome é *${customerName}* e gostaria de fazer o seguinte pedido:\n\n`;
 
   cartItems.forEach((item) => {
     const price = `R$ ${Number(item.salePrice || 0).toFixed(2).replace('.', ',')}`;
@@ -9,6 +9,10 @@ export function generateWhatsAppLink(cartItems, total, phoneNumber) {
   const formattedTotal = `R$ ${Number(total).toFixed(2).replace('.', ',')}`;
 
   message += `\n*Total: ${formattedTotal}*`;
+
+  if (customerMessage && customerMessage.trim()) {
+    message += `\n\n*Observação:*\n${customerMessage.trim()}`;
+  }
 
   const encodedMessage = encodeURIComponent(message);
   

@@ -5,9 +5,12 @@ import styles from "./components.module.css";
 import { useCart } from "@/context/CartContext";
 import { generateWhatsAppLink } from "@/utils/whatsapp";
 import { getWhatsAppNumber } from "@/app/actions/config";
+import { useState } from "react";
 
 export default function CartSidebar() {
   const { isCartOpen, setIsCartOpen, cartItems, dispatch, cartTotal } = useCart();
+  const [customerName, setCustomerName] = useState("");
+  const [customerMessage, setCustomerMessage] = useState("");
 
   const handleUpdateQty = (id, newQty) => {
     if (newQty < 1) return;
@@ -21,12 +24,17 @@ export default function CartSidebar() {
   const formattedTotal = `R$ ${Number(cartTotal).toFixed(2).replace('.', ',')}`;
 
   const handleCheckout = async () => {
+    if (!customerName.trim()) {
+      alert("Por favor, preencha o seu nome antes de finalizar o pedido.");
+      return;
+    }
+
     import("@/app/actions/metrics").then((m) => m.trackClick("checkout"));
     
     // Fetch directly from DB to bypass any page cache
     const currentWppNumber = await getWhatsAppNumber();
     
-    const link = generateWhatsAppLink(cartItems, cartTotal, currentWppNumber);
+    const link = generateWhatsAppLink(cartItems, cartTotal, currentWppNumber, customerName, customerMessage);
     window.open(link, "_blank");
   };
 
@@ -95,6 +103,26 @@ export default function CartSidebar() {
 
         {cartItems.length > 0 && (
           <div className={styles.sidebarFooter}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginBottom: "1.5rem" }}>
+              <input 
+                type="text" 
+                placeholder="Seu Nome *" 
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                style={{ width: "100%", padding: "0.875rem", borderRadius: "8px", border: "1px solid #3f3f46", background: "#18181b", color: "#f4f4f5", outline: "none", transition: "border 0.2s" }}
+                onFocus={(e) => e.target.style.borderColor = "#10b981"}
+                onBlur={(e) => e.target.style.borderColor = "#3f3f46"}
+              />
+              <textarea 
+                placeholder="Observação (opcional)"
+                value={customerMessage}
+                onChange={(e) => setCustomerMessage(e.target.value)}
+                rows="2"
+                style={{ width: "100%", padding: "0.875rem", borderRadius: "8px", border: "1px solid #3f3f46", background: "#18181b", color: "#f4f4f5", outline: "none", resize: "none", fontFamily: "inherit", transition: "border 0.2s" }}
+                onFocus={(e) => e.target.style.borderColor = "#10b981"}
+                onBlur={(e) => e.target.style.borderColor = "#3f3f46"}
+              />
+            </div>
             <div className={styles.totalRow}>
               <span>Total:</span>
               <span>{formattedTotal}</span>
