@@ -224,7 +224,9 @@ export default async function Home() {
       {/* ===================== FOOTER ===================== */}
       <footer className="site-footer">
         <div className="container">
-          <div className="footer-logo">Solyd3D</div>
+          <div style={{ marginBottom: "1rem" }}>
+            <img src="/logo.png" alt="Solyd3D" style={{ height: "48px", objectFit: "contain" }} />
+          </div>
           <div className="footer-links">
             <a href="#catalogo">Catálogo</a>
             <a

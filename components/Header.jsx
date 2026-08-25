@@ -10,7 +10,9 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <div className={`container ${styles.headerContainer}`}>
-        <div className={styles.logo}>Solyd3D</div>
+        <a href="/" style={{ display: "flex", alignItems: "center" }}>
+          <img src="/logo.png" alt="Solyd3D" style={{ height: "40px", objectFit: "contain" }} />
+        </a>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <button
             onClick={() => {
