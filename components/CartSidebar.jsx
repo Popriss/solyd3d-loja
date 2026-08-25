@@ -4,8 +4,9 @@ import { X, Plus, Minus, Trash2 } from "lucide-react";
 import styles from "./components.module.css";
 import { useCart } from "@/context/CartContext";
 import { generateWhatsAppLink } from "@/utils/whatsapp";
+import { getWhatsAppNumber } from "@/app/actions/config";
 
-export default function CartSidebar({ wppNumber = "5511999999999" }) {
+export default function CartSidebar() {
   const { isCartOpen, setIsCartOpen, cartItems, dispatch, cartTotal } = useCart();
 
   const handleUpdateQty = (id, newQty) => {
@@ -19,9 +20,13 @@ export default function CartSidebar({ wppNumber = "5511999999999" }) {
 
   const formattedTotal = `R$ ${Number(cartTotal).toFixed(2).replace('.', ',')}`;
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     import("@/app/actions/metrics").then((m) => m.trackClick("checkout"));
-    const link = generateWhatsAppLink(cartItems, cartTotal, wppNumber);
+    
+    // Fetch directly from DB to bypass any page cache
+    const currentWppNumber = await getWhatsAppNumber();
+    
+    const link = generateWhatsAppLink(cartItems, cartTotal, currentWppNumber);
     window.open(link, "_blank");
   };
 

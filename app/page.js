@@ -2,15 +2,12 @@ import { prisma } from "@/lib/prisma";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import CartSidebar from "@/components/CartSidebar";
-import { getWhatsAppNumber } from "@/app/actions/config";
 
 export const revalidate = 60; // ISR para manter performance e atualizar a cada 60s
 
 export default async function Home() {
   let products = [];
-  let wppNumber = "5511999999999";
   try {
-    wppNumber = await getWhatsAppNumber();
     products = await prisma.product.findMany({
       where: {
         salePrice: {
@@ -40,7 +37,7 @@ export default async function Home() {
   return (
     <>
       <Header />
-      <CartSidebar wppNumber={wppNumber} />
+      <CartSidebar />
       <main className="container" style={{ padding: "4rem 2rem" }}>
         <div style={{ marginBottom: "3rem", textAlign: "center" }}>
           <h1 style={{ fontSize: "2.5rem", fontWeight: "800", marginBottom: "1rem" }}>
