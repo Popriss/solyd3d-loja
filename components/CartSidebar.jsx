@@ -12,13 +12,13 @@ export default function CartSidebar() {
   const [customerName, setCustomerName] = useState("");
   const [customerMessage, setCustomerMessage] = useState("");
 
-  const handleUpdateQty = (id, newQty) => {
+  const handleUpdateQty = (cartItemId, newQty) => {
     if (newQty < 1) return;
-    dispatch({ type: "UPDATE_QUANTITY", payload: { id, quantity: newQty } });
+    dispatch({ type: "UPDATE_QUANTITY", payload: { cartItemId, quantity: newQty } });
   };
 
-  const handleRemoveItem = (id) => {
-    dispatch({ type: "REMOVE_ITEM", payload: { id } });
+  const handleRemoveItem = (cartItemId) => {
+    dispatch({ type: "REMOVE_ITEM", payload: { cartItemId } });
   };
 
   const formattedTotal = `R$ ${Number(cartTotal).toFixed(2).replace('.', ',')}`;
@@ -62,7 +62,7 @@ export default function CartSidebar() {
             </p>
           ) : (
             cartItems.map((item) => (
-              <div key={item.id} className={styles.cartItem}>
+              <div key={item.cartItemId} className={styles.cartItem}>
                 <img
                   src={item.imageUrl || "https://via.placeholder.com/60"}
                   alt={item.name}
@@ -70,20 +70,25 @@ export default function CartSidebar() {
                 />
                 <div className={styles.cartItemInfo}>
                   <h4 className={styles.cartItemTitle}>{item.name}</h4>
+                  {item.selectedColor && item.selectedColor !== "default" && (
+                    <div style={{ fontSize: "0.8rem", color: "#a1a1aa", marginBottom: "0.25rem" }}>
+                      Cor: {item.selectedColor}
+                    </div>
+                  )}
                   <div className={styles.cartItemPrice}>
                     {`R$ ${Number(item.salePrice || 0).toFixed(2).replace('.', ',')}`}
                   </div>
                   <div className={styles.qtyControls}>
                     <button
                       className={styles.qtyBtn}
-                      onClick={() => handleUpdateQty(item.id, item.quantity - 1)}
+                      onClick={() => handleUpdateQty(item.cartItemId, item.quantity - 1)}
                     >
                       <Minus size={14} />
                     </button>
                     <span>{item.quantity}</span>
                     <button
                       className={styles.qtyBtn}
-                      onClick={() => handleUpdateQty(item.id, item.quantity + 1)}
+                      onClick={() => handleUpdateQty(item.cartItemId, item.quantity + 1)}
                     >
                       <Plus size={14} />
                     </button>
@@ -91,7 +96,7 @@ export default function CartSidebar() {
                 </div>
                 <button
                   className={styles.removeBtn}
-                  onClick={() => handleRemoveItem(item.id)}
+                  onClick={() => handleRemoveItem(item.cartItemId)}
                   title="Remover Item"
                 >
                   <Trash2 size={20} />

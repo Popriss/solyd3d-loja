@@ -7,6 +7,7 @@ export const revalidate = 60; // ISR para manter performance e atualizar a cada 
 
 export default async function Home() {
   let products = [];
+  let availableColors = [];
   try {
     products = await prisma.product.findMany({
       where: {
@@ -30,6 +31,16 @@ export default async function Home() {
       weight2G: product.weight2G ? Number(product.weight2G) : null,
       weight3G: product.weight3G ? Number(product.weight3G) : null,
     }));
+
+    const rolls = await prisma.filamentRoll.findMany({
+      where: {
+        active: true,
+        status: { in: ["AVAILABLE", "LOW"] },
+      },
+      select: { color: true },
+      distinct: ['color']
+    });
+    availableColors = rolls.map(r => r.color).sort();
   } catch (error) {
     console.error("Erro ao buscar produtos do ERP:", error);
   }
@@ -62,7 +73,7 @@ export default async function Home() {
             gap: "2rem"
           }}>
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} availableColors={availableColors} />
             ))}
           </div>
         )}

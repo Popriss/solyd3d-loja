@@ -21,6 +21,21 @@ model SystemConfig {
 }
 
 // ============================================
+// ESTOQUE DE FILAMENTOS (Leitura)
+// ============================================
+
+model FilamentRoll {
+  id               Int       @id @default(autoincrement())
+  material         String
+  color            String
+  brand            String
+  active           Boolean   @default(true) @map("is_active")
+  status           String?   @default("AVAILABLE")
+
+  @@map("filament_rolls")
+}
+
+// ============================================
 // CATÁLOGO DE PRODUTOS
 // ============================================
 

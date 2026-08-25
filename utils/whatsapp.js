@@ -3,7 +3,8 @@ export function generateWhatsAppLink(cartItems, total, phoneNumber, customerName
 
   cartItems.forEach((item) => {
     const price = `R$ ${Number(item.salePrice || 0).toFixed(2).replace('.', ',')}`;
-    message += `${item.quantity}x ${item.name} - ${price}\n`;
+    const colorText = item.selectedColor && item.selectedColor !== "default" ? ` [Cor: ${item.selectedColor}]` : "";
+    message += `${item.quantity}x ${item.name}${colorText} - ${price}\n`;
   });
 
   const formattedTotal = `R$ ${Number(total).toFixed(2).replace('.', ',')}`;
