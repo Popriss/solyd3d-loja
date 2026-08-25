@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// CONFIGURAÇÕES GLOBAIS DO SISTEMA
+// ============================================
+
+model SystemConfig {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String
+  label     String?  // Descrição legível da configuração
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_configs")
+}
+
+// ============================================
+// CATÁLOGO DE PRODUTOS
+// ============================================
+
+model Product {
+  id                    Int      @id @default(autoincrement())
+  name                  String
+  description           String?  @db.Text
+  projectLink           String?  @map("project_link")
+  estimatedWeightG      Decimal  @default(0) @map("estimated_weight_g") @db.Decimal(10, 2)
+  estimatedPrintMinutes Int      @default(0) @map("estimated_print_minutes")
+  recommendedMaterial   String?  @map("recommended_material")
+  recommendedColor      String?  @map("recommended_color")
+  profitMarginPct       Decimal  @default(50) @map("profit_margin_pct") @db.Decimal(5, 2)
+  salePrice             Decimal? @map("sale_price") @db.Decimal(10, 2)
+  powerWatts            Decimal? @map("power_watts") @db.Decimal(8, 2)
+  imageUrl              String?  @map("image_url")
+  stockReady            Int      @default(0) @map("stock_ready")
+
+  // Suporte a Multicolor (até 3 cores)
+  color1               String?
+  weight1G             Decimal? @map("weight1_g") @db.Decimal(10, 2)
+  time1Min             Int?     @map("time1_min")
+  color2               String?
+  weight2G             Decimal? @map("weight2_g") @db.Decimal(10, 2)
+  time2Min             Int?     @map("time2_min")
+  color3               String?
+  weight3G             Decimal? @map("weight3_g") @db.Decimal(10, 2)
+  time3Min             Int?     @map("time3_min")
+
+  // Suporte a Insumos / Hardware (até 2 itens extras)
+  extra1Name           String?  @map("extra1_name")
+  extra1Qty            Int?     @map("extra1_qty")
+  extra2Name           String?  @map("extra2_name")
+  extra2Qty            Int?     @map("extra2_qty")
+
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  @@map("products")
+}

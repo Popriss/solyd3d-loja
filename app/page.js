@@ -1,69 +1,75 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { prisma } from "@/lib/prisma";
+import Header from "@/components/Header";
+import ProductCard from "@/components/ProductCard";
+import CartSidebar from "@/components/CartSidebar";
+import { getWhatsAppNumber } from "@/app/actions/config";
 
-export default function Home() {
+export const revalidate = 60; // ISR para manter performance e atualizar a cada 60s
+
+export default async function Home() {
+  let products = [];
+  let wppNumber = "5511999999999";
+  try {
+    wppNumber = await getWhatsAppNumber();
+    products = await prisma.product.findMany({
+      where: {
+        salePrice: {
+          not: null,
+        }
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    
+    // Convert decimal numbers to string/number for client components
+    products = products.map(product => ({
+      ...product,
+      salePrice: product.salePrice ? Number(product.salePrice) : null,
+      estimatedWeightG: product.estimatedWeightG ? Number(product.estimatedWeightG) : null,
+      profitMarginPct: product.profitMarginPct ? Number(product.profitMarginPct) : null,
+      powerWatts: product.powerWatts ? Number(product.powerWatts) : null,
+      weight1G: product.weight1G ? Number(product.weight1G) : null,
+      weight2G: product.weight2G ? Number(product.weight2G) : null,
+      weight3G: product.weight3G ? Number(product.weight3G) : null,
+    }));
+  } catch (error) {
+    console.error("Erro ao buscar produtos do ERP:", error);
+  }
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.js</code> file.
+    <>
+      <Header />
+      <CartSidebar wppNumber={wppNumber} />
+      <main className="container" style={{ padding: "4rem 2rem" }}>
+        <div style={{ marginBottom: "3rem", textAlign: "center" }}>
+          <h1 style={{ fontSize: "2.5rem", fontWeight: "800", marginBottom: "1rem" }}>
+            Catálogo de Produtos 3D
           </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p style={{ color: "#a1a1aa", fontSize: "1.1rem", maxWidth: "600px", margin: "0 auto" }}>
+            Explore nossos produtos exclusivos impressos sob demanda com tecnologia e qualidade de ponta.
           </p>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
+        {products.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "4rem", background: "rgba(255,255,255,0.02)", borderRadius: "16px" }}>
+            <h2>Nenhum produto encontrado.</h2>
+            <p style={{ color: "#a1a1aa", marginTop: "1rem" }}>
+              O banco de dados pode estar vazio ou ocorreu um erro de conexão.
+            </p>
+          </div>
+        ) : (
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+            gap: "2rem"
+          }}>
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </main>
-    </div>
+    </>
   );
 }
