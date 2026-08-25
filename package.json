@@ -17,6 +17,7 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
-    "prisma": "^7.9.1"
+    "prisma": "^7.9.1",
+    "sharp": "^0.35.3"
   }
 }
