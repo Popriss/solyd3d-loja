@@ -32,17 +32,41 @@ export default function ProductCard({ product, availableColors = [] }) {
         </div>
         
         {availableColors.length > 0 && (
-          <div style={{ marginTop: "1rem", marginBottom: "1rem" }}>
-            <label style={{ display: "block", fontSize: "0.85rem", color: "#a1a1aa", marginBottom: "0.25rem" }}>Cor do Material</label>
-            <select
-              value={selectedColor}
-              onChange={(e) => setSelectedColor(e.target.value)}
-              style={{ width: "100%", padding: "0.5rem", borderRadius: "8px", border: "1px solid #3f3f46", background: "rgba(0,0,0,0.2)", color: "#f4f4f5", outline: "none", cursor: "pointer", fontSize: "0.9rem" }}
-            >
+          <div style={{ marginTop: "1rem", marginBottom: "1.5rem" }}>
+            <label style={{ display: "block", fontSize: "0.85rem", color: "#a1a1aa", marginBottom: "0.5rem" }}>Cor do Material</label>
+            <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
               {availableColors.map((color) => (
-                <option key={color} value={color}>{color}</option>
+                <button
+                  key={color}
+                  onClick={() => setSelectedColor(color)}
+                  style={{
+                    padding: "0.35rem 0.85rem",
+                    borderRadius: "9999px",
+                    fontSize: "0.8rem",
+                    fontWeight: "500",
+                    border: selectedColor === color ? "1px solid #3b82f6" : "1px solid #3f3f46",
+                    background: selectedColor === color ? "rgba(59, 130, 246, 0.15)" : "rgba(0,0,0,0.2)",
+                    color: selectedColor === color ? "#3b82f6" : "#a1a1aa",
+                    cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}
+                  onMouseEnter={(e) => {
+                    if (selectedColor !== color) {
+                      e.target.style.borderColor = "#71717a";
+                      e.target.style.color = "#e4e4e7";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (selectedColor !== color) {
+                      e.target.style.borderColor = "#3f3f46";
+                      e.target.style.color = "#a1a1aa";
+                    }
+                  }}
+                >
+                  {color}
+                </button>
               ))}
-            </select>
+            </div>
           </div>
         )}
         <div className={styles.productFooter}>
